@@ -48,7 +48,40 @@ def standarize_date(str): #This function is what we apply to our dataframe colum
 data['Released'] = data['Released'].apply(standarize_date) # applies our transformation for the dates so that we can then sort them by ascending
 data['Released'] = data['Released'].apply(pd.to_datetime) #transforms our string values in column Released into a datetime object
 data = data.sort_values(by='Released') #sorts our released column 
-print(data.head(25))
+
+def format_title(title):
+  # if('…' in title):
+  #   print('incomplete title')
+  #   print(title)
+
+  #handle special cases
+  if("F9" in title):
+    return ["F9", "fast 9", "fast and furious 9", "f9 the fast saga"]
+  if("Shang-Chi" in title):
+    return ["shang chi", "shang chi and the legend of the ten rings"]
+  if("Summer of Soul" in title):
+    return ["summer of soul", "summer of soul or when the revolution cannot be televised"]
+  if("Roadrunner" in title):
+    return ['Roadrunner', 'roadrunner anthony bourdain', 'road runner a film about anthony bourdain']
+  if("Christmas with the Chosen" in title):
+    return ["Christmas with the chosen", 'christmas with the chosen the messengers']
+  if("Quiet Place" in title):
+    return ["a quiet place", "a quiet place part 2", "a quiet place part II"]
+
+  to_return = []
+  
+  #handle dashes
+  title = title.replace("-", " ")
+  # handle colons
+  colon_split = title.split(':')
+  if(len(colon_split) > 1):
+    to_return.append(colon_split[0])
+    to_return.append(" ".join(colon_split).replace("  ", " "))
+  else:
+    to_return.append(title)
+  
+
+  return to_return
 
 for index,row in data.iterrows():
     title = row['Title']
@@ -60,5 +93,13 @@ for index,row in data.iterrows():
     until = row['Released'].strftime('%Y-%m-%d')
     filename = str(index) + '-' + title.lower().replace(' ', '')
     filename += '.txt'
-    command = 'snscrape --since ' + since + ' twitter-search "' + row['Title'] + ' movie until:' + until + '" > data/' + filename
-    os.system(command)
+
+
+    titles = format_title(title)
+    for formatted_title in titles:
+      command = 'snscrape --jsonl --since ' + since + ' twitter-search "' + formatted_title + ' movie until:' + until + '" > raw_tweets/' + filename
+      os.system(command)
+
+# we format titles for scraping
+# check for with and without colons
+# special handling for certain cases

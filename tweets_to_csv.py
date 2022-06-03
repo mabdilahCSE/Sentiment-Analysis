@@ -64,6 +64,7 @@ data_test = pd.concat(tweet_dfs)
 data_test.sort_values(by='movie_id', inplace=True)
 data_test.reset_index(inplace=True, drop=True)
 data_test.drop_duplicates(subset=["tweet"], inplace=True)
+data_test.to_csv('test.zip', index=False)
 
 print(data_test.head())
 print(data_test.groupby('movie').count().sort_values(by='tweet', ascending=False))

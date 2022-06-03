@@ -54,24 +54,27 @@ def format_title(title):
   #   print('incomplete title')
   #   print(title)
 
+  title = title.lower()
+
   #handle special cases
-  if("F9" in title):
+  if("f9" in title):
     return ["F9", "fast 9", "fast and furious 9", "f9 the fast saga"]
-  if("Shang-Chi" in title):
+  if("shang-chi" in title):
     return ["shang chi", "shang chi and the legend of the ten rings"]
-  if("Summer of Soul" in title):
+  if("summer of soul" in title):
     return ["summer of soul", "summer of soul or when the revolution cannot be televised"]
-  if("Roadrunner" in title):
+  if("roadrunner" in title):
     return ['Roadrunner', 'roadrunner anthony bourdain', 'road runner a film about anthony bourdain']
-  if("Christmas with the Chosen" in title):
+  if("christmas with the chosen" in title):
     return ["Christmas with the chosen", 'christmas with the chosen the messengers']
-  if("Quiet Place" in title):
+  if("quiet place" in title):
     return ["a quiet place", "a quiet place part 2", "a quiet place part II"]
 
   to_return = []
   
   #handle dashes
   title = title.replace("-", " ")
+
   # handle colons
   colon_split = title.split(':')
   if(len(colon_split) > 1):
@@ -86,18 +89,21 @@ def format_title(title):
 for index,row in data.iterrows():
     title = row['Title']
     words = title.split()
+    
     if(len(words) == 1):
         continue
 
-    since = (row['Released'] - datetime.timedelta(days=365)).strftime('%Y-%m-%d')
-    until = row['Released'].strftime('%Y-%m-%d')
+    since = row['Released'].strftime('%Y-%m-%d')
+    until = (row['Released'] + datetime.timedelta(days=61)).strftime('%Y-%m-%d')
     filename = str(index) + '-' + title.lower().replace(' ', '')
+    filename = filename.replace("(","")
     filename += '.txt'
 
 
     titles = format_title(title)
     for formatted_title in titles:
-      command = 'snscrape --jsonl --since ' + since + ' twitter-search "' + formatted_title + ' movie until:' + until + '" > raw_tweets/' + filename
+      command = 'snscrape --jsonl --since ' + since + ' twitter-search "' + formatted_title + ' movie until:' + until + '" >> new_raw_tweets/' + filename
+      os.system('echo ' + filename)
       os.system(command)
 
 # we format titles for scraping

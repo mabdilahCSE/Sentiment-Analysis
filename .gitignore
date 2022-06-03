@@ -2,3 +2,5 @@ processed_tweets/
 raw_tweets/
 raw_tweets.zip
 processed_tweets.zip
+.DS_Store
+tweets.csv
